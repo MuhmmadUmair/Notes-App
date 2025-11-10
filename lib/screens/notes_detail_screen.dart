@@ -1,93 +1,131 @@
 import 'package:flutter/material.dart';
 import 'package:notes_app/constants/my_app_icons.dart';
+import 'package:notes_app/models/note_model.dart';
 import 'package:notes_app/screens/notes_screen.dart';
+import 'package:notes_app/view_model/note_provider.dart';
 import 'package:notes_app/widgets/my_icon_widget.dart';
+import 'package:provider/provider.dart';
 
 class NotesDetailScreen extends StatelessWidget {
-  const NotesDetailScreen({super.key});
-
+  final NoteModel note;
+  const NotesDetailScreen({super.key, required this.note});
   @override
   Widget build(BuildContext context) {
+    final notesProvider = Provider.of<NoteProvider>(context);
+    final sheetHeight = MediaQuery.of(context).size.height * 0.65;
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          const NotesScreen(),
-          Container(color: Colors.black.withValues(alpha: 0.6)),
+          NotesScreen(),
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotesScreen()),
+              );
+            },
+            child: Container(color: Colors.black.withOpacity(0.6)),
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              padding: EdgeInsets.all(25),
-              height: 600,
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              height: sheetHeight,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
               ),
-              child: SingleChildScrollView(
+              child: SafeArea(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // top action icons
                     Row(
                       children: [
                         Transform.rotate(
-                          angle: 0.80,
+                          angle: 0.8,
                           child: MyIconWidget(
                             icon: MyAppIcons.pin,
                             function: () {},
-                            backgroundColor: Color(0xffbAD6139),
+                            backgroundColor: const Color(0xffbAD6139),
                           ),
                         ),
-                        SizedBox(width: 15),
+                        const SizedBox(width: 12),
                         MyIconWidget(
                           icon: MyAppIcons.edit,
-                          function: () {},
-                          backgroundColor: Color(0xffb314290),
+                          function: () {
+                            // navigate to edit screen (pass note)
+                          },
+                          backgroundColor: const Color(0xffb314290),
                         ),
-                        SizedBox(width: 15),
+                        const SizedBox(width: 12),
                         MyIconWidget(
                           icon: MyAppIcons.search,
                           function: () {},
                           backgroundColor: Colors.green,
                         ),
-                        Spacer(),
+                        const Spacer(),
                         MyIconWidget(
                           icon: MyAppIcons.delete,
-                          function: () {},
+                          function: () {
+                            // delete from provider and pop
+                            notesProvider.deleteNoteById(note.id);
+                            Navigator.pop(context);
+                          },
                           backgroundColor: Colors.red,
                         ),
                       ],
                     ),
+
+                    // optional category chip
                     Padding(
-                      padding: const EdgeInsets.only(top: 80),
+                      padding: const EdgeInsets.only(top: 28.0),
                       child: Container(
-                        padding: EdgeInsets.all(6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
-                          color: Color(0xffbFAF7ED),
+                          color: const Color(0xffbFAF7ED),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Text('Notes'),
+                        child: const Text('Notes'),
                       ),
                     ),
-                    SizedBox(height: 20),
+
+                    const SizedBox(height: 16),
+
+                    // title
                     Text(
-                      'Football And Tennis',
-                      style: TextStyle(
+                      note.title,
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                        fontSize: 22,
                       ),
                     ),
-                    SizedBox(height: 20),
+
+                    const SizedBox(height: 8),
+
+                    // date (from model)
                     Text(
-                      '28/7/2022',
-                      style: TextStyle(
+                      notesProvider.formatDate(note.createdOn),
+                      style: const TextStyle(
                         fontWeight: FontWeight.w600,
-                        fontSize: 15,
+                        fontSize: 14,
                       ),
                     ),
-                    SizedBox(height: 30),
-                    Text(
-                      "I enjoy researching, communicating with people, and finding creative ways to solve problems. I believe these skills are very important in business development — especially when it comes to identifying potential clients and helping a company expand its reach.while improving my own skills in marketing, communication, and teamwork.I want to learn how business development works in real companies — from researching leads to communicating with clients and closing deals. I also want to gain practical experience in using professional tools and strategies.Because I’m a fast learner, dedicated, and have strong communication and research skills. I’m confident I can quickly adapt, understand your business goals, and help your team in generating and managing leads effectively.",
+
+                    const SizedBox(height: 18),
+
+                    // body
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Text(
+                          note.bodyText,
+                          style: const TextStyle(fontSize: 16, height: 1.5),
+                        ),
+                      ),
                     ),
                   ],
                 ),

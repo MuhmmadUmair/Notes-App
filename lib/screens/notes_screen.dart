@@ -13,10 +13,8 @@ class NotesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final noteProvider = Provider.of<NoteProvider>(context);
+    final noteProvider = Provider.of<NoteProvider>(context, listen: false);
     final notes = noteProvider.notes;
-
-    // responsive column count (optional)
     final width = MediaQuery.of(context).size.width;
     final crossAxisCount = width > 600 ? 3 : 2;
 
@@ -24,13 +22,18 @@ class NotesScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xffb0e435a),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => AddNotesScreen()),
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor:
+                Colors.transparent, // allow custom rounded white sheet
+            builder: (ctx) =>
+                const AddNotesBottomSheet(), // lightweight sheet widget
           );
         },
         child: const Icon(MyAppIcons.add, color: Colors.white),
       ),
+
       appBar: AppBar(
         title: const Text('Notes', style: TextStyle(color: Color(0xffb0e435a))),
         actions: [
@@ -47,11 +50,19 @@ class NotesScreen extends StatelessWidget {
           itemCount: notes.length,
           itemBuilder: (context, index) {
             final NoteModel note = notes[index];
+            final formatDate = noteProvider.formatDate(note.createdOn);
             return GestureDetector(
-              child: NotesWidget(title: note.title, bodyText: note.bodyText),
+              child: NotesWidget(
+                title: note.title,
+                bodyText: note.bodyText,
+                createdOn: formatDate,
+              ),
               onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => NotesDetailScreen()),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NotesDetailScreen(note: note),
+                  ),
                 );
               },
             );

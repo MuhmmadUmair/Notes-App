@@ -1,6 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:flutter/material.dart';
-
 class NoteModel {
   final int id;
   final String title;
@@ -8,7 +5,7 @@ class NoteModel {
   // final List<String> labels;
   final bool isPinned;
   final bool isArchived;
-  final DateTime createdAt;
+  final DateTime createdOn;
   // final DateTime updatedAt;
   // final Color color;
   NoteModel({
@@ -18,7 +15,7 @@ class NoteModel {
     // required this.labels,
     required this.isPinned,
     required this.isArchived,
-    required this.createdAt,
+    required this.createdOn,
     // required this.updatedAt,
     // required this.color,
   });
@@ -41,7 +38,7 @@ class NoteModel {
       // labels: labels ?? this.labels,
       isPinned: isPinned ?? this.isPinned,
       isArchived: isArchived ?? this.isArchived,
-      createdAt: createdAt ?? this.createdAt,
+      createdOn: createdAt ?? this.createdOn,
       // updatedAt: updatedAt ?? this.updatedAt,
       // color: color ?? this.color,
     );

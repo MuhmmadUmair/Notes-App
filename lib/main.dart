@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:notes_app/screens/add_notes_screen.dart';
-import 'package:notes_app/screens/notes_detail_screen.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:notes_app/screens/notes_screen.dart';
+import 'package:notes_app/services/note_adopter.dart';
 import 'package:notes_app/view_model/note_provider.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  // Register adapter BEFORE opening any boxes
+  if (!Hive.isAdapterRegistered(1)) {
+    Hive.registerAdapter(NoteModelAdapter());
+  }
+  await Hive.openBox('MyBox');
   runApp(const MyApp());
 }
 
